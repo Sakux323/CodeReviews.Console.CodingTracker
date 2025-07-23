@@ -61,6 +61,10 @@ internal class SessionController
         using (var connection = new SqliteConnection(_connectionString))
         {
             connection.Open();
+
+            string query = "UPDATE CodingSessions SET StartTime = @StartTime, EndTime = @EndTime, Duration = @Duration WHERE id = @Id";
+
+            connection.Execute(query, session);
         }
     }
 

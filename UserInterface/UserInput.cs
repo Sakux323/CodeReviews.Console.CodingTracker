@@ -54,10 +54,10 @@ internal static class UserInput
         _controller.AddSession(session);
     }
 
-    private static double CalculateDuration(DateTime startTime, DateTime endTime)
+    private static int CalculateDuration(DateTime startTime, DateTime endTime)
     {
         var difference = endTime.Subtract(startTime);
-        return difference.TotalSeconds;
+        return (int)difference.TotalSeconds;
     }
 
     private static string FormatDateToString(DateTime date)
@@ -65,25 +65,24 @@ internal static class UserInput
         return date.ToString("dd-MM-yy HH:mm");
     }
 
-    private static string FormatDuration(double duration)
+    private static string FormatDuration(int duration)
     {
-        duration = Math.Floor(duration);
         if (duration < 60)
             return $"{duration} second{(duration == 1 ? "" : "s")}";
 
         if (duration < 3600)
         {
-            double minutes = Math.Floor(duration / 60);
+            int minutes = duration / 60;
             return $"{minutes} minute{(minutes == 1 ? "" : "s")}";
         }
 
         if (duration < 86400)
         {
-            double hours = Math.Floor(duration / 3600);
+            int hours = duration / 3600;
             return $"{hours} hour{(hours == 1 ? "" : "s")}";
         }
 
-        double days = Math.Floor(duration / 86400);
+        int days = duration / 86400;
         return $"{days} day{(days == 1 ? "" : "s")}";
     }
 
@@ -154,7 +153,7 @@ internal static class UserInput
             endTime = GetDateInput("Enter the end date of the session in the following format (dd-MM-yy hh:mm)");
         }
 
-        double duration = CalculateDuration(startTime, endTime);
+        int duration = CalculateDuration(startTime, endTime);
 
         session.StartTime = FormatDateToString(startTime);
         session.EndTime = FormatDateToString(endTime);
@@ -180,6 +179,16 @@ internal static class UserInput
 
         DateTime newStartTime = GetDateInput("Enter the start date of the session in the following format (dd-MM-yy hh:mm)");
         DateTime newEndTime = GetDateInput("Enter the end date of the session in the following format (dd-MM-yy hh:mm)");
+
+        CodingSession updatedSession = new CodingSession
+        {
+            Id = sessionId,
+            StartTime = FormatDateToString(newStartTime),
+            EndTime = FormatDateToString(newEndTime),
+            Duration = CalculateDuration(newStartTime, newEndTime),
+        };
+
+        _controller.UpdateSession(sessionId, updatedSession);
     }
 
     public static void DeleteSession()
